@@ -1,0 +1,3 @@
+[submodule "leveling-contracts/lib/forge-std"]
+	path = leveling-contracts/lib/forge-std
+	url = https://github.com/foundry-rs/forge-std
