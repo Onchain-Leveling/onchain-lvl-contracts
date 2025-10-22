@@ -3,14 +3,11 @@ pragma solidity ^0.8.24;
 
 import "../storage/TaskStorage.sol";
 import "../utils/Errors.sol";
+import "../interfaces/ITaskManager.sol";
 
 /// @title TaskManager
 /// @notice Handles creation, updating, and completion of tasks.
-abstract contract TaskManager is TaskStorage {
-    event TaskDefCreated(uint256 indexed taskId, string name);
-    event TaskDefUpdated(uint256 indexed taskId);
-    event TaskProgressed(address indexed user, uint32 day, uint256 indexed taskId, uint16 oldProgress, uint16 newProgress);
-    event TaskCompleted(address indexed user, uint32 day, uint256 indexed taskId, uint16 progress, uint16 goal, uint256 xpAwarded);
+abstract contract TaskManager is TaskStorage, ITaskManager {
 
     function _awardXp(address user, uint256 amount) internal virtual;
 

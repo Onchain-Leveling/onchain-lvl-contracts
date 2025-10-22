@@ -5,22 +5,22 @@ import "../storage/UserStorage.sol";
 import "../storage/LevelStorage.sol";
 import "../utils/XPUtils.sol";
 import "../utils/Errors.sol";
+import "../interfaces/ILevelManager.sol";
 
 /// @title LevelManager
 /// @notice Manages XP accumulation and level progression.
-abstract contract LevelManager is UserStorage, LevelStorage {
-    event XPAwarded(address indexed user, uint256 amount, uint256 totalXp, uint32 newLevel);
+abstract contract LevelManager is UserStorage, LevelStorage, ILevelManager {
 
-    function xpOf(address user) public view returns (uint256) {
+    function xpOf(address user) public view virtual returns (uint256) {
         return _users[user].xp;
     }
 
-    function levelOf(address user) public view returns (uint32) {
+    function levelOf(address user) public view virtual returns (uint32) {
         return _users[user].level;
     }
 
     /// @notice Returns remaining XP to next level and next cumulative XP milestone.
-    function nextLevelXp(address user) external view returns (uint256 remaining, uint256 nextLevelCumulative) {
+    function nextLevelXp(address user) external view virtual returns (uint256 remaining, uint256 nextLevelCumulative) {
         if (!_users[user].registered) return (0, 0);
         uint32 lvl = _users[user].level;
         uint256 nextCum = XPUtils.cumulativeXpForLevel(lvl + 1);
@@ -30,7 +30,7 @@ abstract contract LevelManager is UserStorage, LevelStorage {
     }
 
     /// @dev Internal method to increase XP and auto-level up if threshold reached.
-    function _awardXp(address user, uint256 amount) internal {
+    function _awardXp(address user, uint256 amount) internal virtual {
         _requireRegistered(user);
         if (amount == 0) return;
 

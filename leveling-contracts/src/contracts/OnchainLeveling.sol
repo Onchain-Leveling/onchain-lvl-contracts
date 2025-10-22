@@ -16,10 +16,7 @@ contract OnchainLeveling is
     Ownable,
     CharacterManager,
     LevelManager,
-    TaskManager,
-    ICharacterManager,
-    ILevelManager,
-    ITaskManager
+    TaskManager
 {
     constructor(address initialOwner) Ownable(initialOwner) {
         // Seed default demo tasks (ids start from 1)
@@ -31,7 +28,7 @@ contract OnchainLeveling is
     // ---------- Character Manager ----------
     function register(string calldata name, uint8 characterType)
         public
-        override(CharacterManager, ICharacterManager)
+        override(CharacterManager)
     {
         super.register(name, characterType);
     }
@@ -39,7 +36,7 @@ contract OnchainLeveling is
     function getProfile(address user)
         external
         view
-        override(CharacterManager, ICharacterManager)
+        override(CharacterManager)
         returns (string memory, uint8, uint32, uint256, bool)
     {
         UserProfile storage u = _users[user];
@@ -98,26 +95,26 @@ contract OnchainLeveling is
     }
 
     // ---------- Level Manager ----------
-    function xpOf(address user) public view override(ILevelManager, LevelManager) returns (uint256) {
+    function xpOf(address user) public view override(LevelManager) returns (uint256) {
         return super.xpOf(user);
     }
 
-    function levelOf(address user) public view override(ILevelManager, LevelManager) returns (uint32) {
+    function levelOf(address user) public view override(LevelManager) returns (uint32) {
         return super.levelOf(user);
     }
 
     function nextLevelXp(address user)
         external
         view
-        override(ILevelManager, LevelManager)
+        override(LevelManager)
         returns (uint256 remaining, uint256 nextLevelCumulative)
     {
         if (!_users[user].registered) return (0, 0);
         uint32 lvl = _users[user].level;
         uint256 nextCum = XPUtils.cumulativeXpForLevel(lvl + 1);
         uint256 currentXp = _users[user].xp;
-        uint256 remaining = nextCum > currentXp ? (nextCum - currentXp) : 0;
-        return (remaining, nextCum);
+        uint256 xpRemaining = nextCum > currentXp ? (nextCum - currentXp) : 0;
+        return (xpRemaining, nextCum);
     }
 
     // ---------- Internal Wiring ----------

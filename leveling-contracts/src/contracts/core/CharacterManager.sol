@@ -3,11 +3,11 @@ pragma solidity ^0.8.24;
 
 import "../storage/UserStorage.sol";
 import "../utils/Errors.sol";
+import "../interfaces/ICharacterManager.sol";
 
 /// @title CharacterManager
 /// @notice Handles player registration and character selection.
-abstract contract CharacterManager is UserStorage {
-    event Registered(address indexed user, string name, uint8 characterType);
+abstract contract CharacterManager is UserStorage, ICharacterManager {
 
     /// @notice Registers a new user with a chosen character type.
     /// @dev Only one-time registration per wallet.
@@ -27,12 +27,12 @@ abstract contract CharacterManager is UserStorage {
     }
 
     /// @notice Internal helper to enforce registration requirement.
-    function _requireRegistered(address user) internal view {
+    function _requireRegistered(address user) internal view virtual {
         if (!_users[user].registered) revert NotRegistered();
     }
 
     /// @notice Returns the profile data for a given user.
-    function getProfile(address user) external view returns (
+    function getProfile(address user) external view virtual returns (
         string memory name,
         uint8 characterType,
         uint32 level,
